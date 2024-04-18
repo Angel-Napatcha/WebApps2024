@@ -17,7 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from register.views import register_view, activate, login_view, account_verification
-from payapp.views import home_view
+from currency_converter_api.views import convert_currency
+from payapp.views import home_view, logout_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,5 +26,7 @@ urlpatterns = [
     path('webapps2024/verification/', account_verification, name='account_verification'), 
     path('activate/<uidb64>/<token>/', activate, name='activate'),
     path('webapps2024/register/login/', login_view, name='login'),
+    path('api/conversion/<str:currency1>/<str:currency2>/<str:amount>/', convert_currency, name='convert_currency'),
     path('webapps2024/payapp/home/', home_view, name='home'),
+    path('webapps2024/payapp/logout/', logout_view, name='logout')
 ]

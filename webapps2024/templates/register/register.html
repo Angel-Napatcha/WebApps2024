@@ -27,7 +27,7 @@
         .form-group {
             position: relative;
             margin-bottom: 18px;
-            height: 50px;
+            height: auto; /* Allow the height to grow with content */
             width: 100%;
         }
         .input-container {
@@ -45,7 +45,8 @@
             color: #E55347;
             font-size: 0.8em;
             position: absolute;
-            bottom: -20px;
+            {% comment %} bottom: -30px; {% endcomment %}
+            margin-top: 10px;
             margin-bottom: 3px;
             width: calc(100% - 35px);
         }
@@ -87,7 +88,11 @@
             <div class="form-group">
                 {{ user_form.username }}
                 {% if user_form.username.errors %}
-                    <div class="errorlist">{{ user_form.username.errors.as_text }}</div>
+                <div class="errorlist" id="username-error">
+                    {% for error in user_form.username.errors %}
+                        {{ error }}  <!-- This displays only the error message without prefix -->
+                    {% endfor %}
+                </div>
                 {% endif %}
             </div>
             <div class="form-group">
@@ -98,15 +103,24 @@
             </div>
             <div class="form-group">
                 {{ user_form.email }}
-                {% if user_form.email.errors %}
-                    <div class="errorlist">{{ user_form.email.errors.as_text }}</div>
-                {% endif %}
+                <div class="errorlist" id="email-error">
+                    {% for error in user_form.email.errors %}
+                        {{ error }}  <!-- This displays only the error message without prefix -->
+                    {% endfor %}
+                </div>
             </div>
             <div class="form-group">
                 {{ user_form.password1 }}
             </div>
             <div class="form-group">
                 {{ user_form.password2 }}
+                {% if user_form.password2.errors %}
+                    <div class="errorlist" id="password-error">
+                        {% for error in user_form.password2.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
             <div class="form-group">
                 {{ account_form.preferred_currency }}
@@ -117,5 +131,26 @@
             </div>
         </form>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Select all form groups
+            const formGroups = document.querySelectorAll('.form-group');
+        
+            formGroups.forEach(group => {
+                // Find any errorlist within this form group
+                const errorList = group.querySelector('.errorlist');
+                if (errorList) {
+                    // Calculate the margin based on the length of the error message
+                    const errorLength = errorList.textContent.trim().length;
+                    const newMarginBottom = Math.max(20, 25 + Math.floor(errorList.textContent.length / 8));  // Simple linear scaling: 10px base + 1px per character of error message
+                    group.style.marginBottom = newMarginBottom + 'px';
+                } else {
+                    group.style.marginBottom = '18px'; 
+                }
+            });
+        });
+        </script>
+
 </body>
 </html>

@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect
 from django import forms
+from register.models import UserAccount
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from register.models import UserAccount
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse
 from django.core.mail import send_mail
@@ -13,10 +13,8 @@ from django.utils.encoding import force_bytes
 
 
 class UserRegistrationForm(UserCreationForm):
-    first_name = forms.CharField(max_length=30, required=True,
-                                 widget=forms.TextInput(attrs={'placeholder': 'First Name'}))
-    last_name = forms.CharField(max_length=30, required=True,
-                                widget=forms.TextInput(attrs={'placeholder': 'Last Name'}))
+    first_name = forms.CharField(max_length=30, required=True, widget=forms.TextInput(attrs={'placeholder': 'First Name'}))
+    last_name = forms.CharField(max_length=30, required=True, widget=forms.TextInput(attrs={'placeholder': 'Last Name'}))
     email = forms.EmailField(max_length=75, required=True, widget=forms.EmailInput(attrs={'placeholder': 'Email'}))
 
     def __init__(self, *args, **kwargs):
@@ -28,14 +26,22 @@ class UserRegistrationForm(UserCreationForm):
     def clean_username(self):
         username = self.cleaned_data.get('username')
         if User.objects.filter(username=username).exists():
-            raise ValidationError("A user with that username already exists")
+            raise ValidationError("A user with that username already exists.")
         return username
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
         if User.objects.filter(email=email).exists():
-            raise ValidationError("A user with that email already exists")
+            raise ValidationError("A user with that email already exists.")
         return email
+
+    def clean_password(self):
+        cleaned_data = super().clean()
+        password1 = cleaned_data.get("password1")
+        password2 = cleaned_data.get("password2")
+
+        if password1 and password2 and password1 != password2:
+            raise ValidationError("The two password fields didn't match.")
 
     class Meta:
         model = User
@@ -63,7 +69,7 @@ def register_view(request):
             token = default_token_generator.make_token(new_user)
             uid = urlsafe_base64_encode(force_bytes(new_user.pk))
             link = request.build_absolute_uri(reverse('activate', kwargs={'uidb64': uid, 'token': token}))
-            email_body = f'Hi {new_user.username}, Please use this link to verify your email address: {link}'
+            email_body = f'Hi {new_user.username}, please use this link to verify your email address: {link}'
             send_mail(
                 'Verify your email address',
                 email_body,
@@ -71,8 +77,13 @@ def register_view(request):
                 [new_user.email],
                 fail_silently=False,
             )
-            return redirect('account_verification') 
-            
+            return redirect('account_verification')
+        # else:
+        #     # Log when the forms are not valid
+        #     print("User form is valid:", user_form.is_valid())
+        #     print("Account form is valid:", account_form.is_valid())
+        #     print("User form errors:", user_form.errors)
+        #     print("Account form errors:", account_form.errors)
     else:
         user_form = UserRegistrationForm()
         account_form = UserAccountForm()
@@ -110,6 +121,6 @@ def login_view(request):
             else:
                 return render(request, 'register/login.html', {'error': 'Account is not activated, please check your email.'})
         else:
-            return render(request, 'register/login.html', {'error': 'Invalid username or password'})
+            return render(request, 'register/login.html', {'error': 'Invalid username or password.'})
     else:
         return render(request, 'register/login.html')

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #F7F7F7;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .top-bar {
+            background-color: #3A506B;
+            color: white;
+            padding: 10px 20px;
+            width: 100%;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95em;
+        }
+        .top-bar a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            width: 100%;
+            text-align: right;
+            margin-right: 1em;
+        }
+        .top-bar a:hover {
+            text-decoration: underline;
+        }
+        .greeting {
+            color: #f4f7fa;
+            font-size: 1.5em;
+            font-weight: 300;
+            margin: 20px 0;
+            width: 100%;
+            padding: 0 20px;
+            box-sizing: border-box;
+            text-align: left;
+        }
+        .balance-box, .activities-box {
+            background: #CCD5DF;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin: 10px 0;
+            padding: 20px;
+            width: calc(100% - 40px);
+            box-sizing: border-box;
+            margin-top: 1.5em;
+        }
+        .balance-title {
+            color: #333;
+            font-size: 1.2em;
+            margin-top: 0.2em;
+            margin-bottom: 1em;
+            text-align: left;
+            font-weight: normal; 
+        }        
+        .balance-container {
+            display: flex;
+            align-items: center; /* Centers the balance and currency vertically */
+            justify-content: start; /* Aligns content to the start of the flex container */
+        }
+        .balance-info {
+            color: #3A506B;
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 0;
+            text-align: left;
+        }
+        .currency {
+            color: #555;
+            font-size: 1.5em;
+            margin-top: 5px;
+            margin-left: 0.6em;
+            text-align: left;
+        }
+        .activities-box {
+            margin-top: 20px;
+        }
+        .activities-title {
+            color: #333;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="greeting">Hi again, {{ user.username }}!</div>
+        <a href="{% url 'logout' %}">LOG OUT</a>
+    </div>
+    <div class="balance-box">
+        <h2 class="balance-title">Current Balance</h2>
+        <div class="balance-container"> 
+            <div class="balance-info">{{ balance }}</div>
+            <div class="currency">{{ currency }}</div>
+        </div>
+    </div>
+    <div class="activities-box">
+        <div class="activities-title">Activities</div>
+    </div>
+</body>
+</html>
