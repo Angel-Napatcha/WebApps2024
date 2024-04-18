@@ -6,6 +6,10 @@ from django.contrib.auth.forms import UserCreationForm
 from register.models import UserAccount
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse
+from django.core.mail import send_mail
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes
 
 
 class UserRegistrationForm(UserCreationForm):
@@ -52,13 +56,47 @@ def register_view(request):
             new_user = user_form.save()
             account = account_form.save(commit=False)
             account.user = new_user
+            account.is_activated = False 
             account.save()
-            return redirect(reverse('login'))
+            
+            # Send verification email
+            token = default_token_generator.make_token(new_user)
+            uid = urlsafe_base64_encode(force_bytes(new_user.pk))
+            link = request.build_absolute_uri(reverse('activate', kwargs={'uidb64': uid, 'token': token}))
+            email_body = f'Hi {new_user.username}, Please use this link to verify your email address: {link}'
+            send_mail(
+                'Verify your email address',
+                email_body,
+                'from@example.com',
+                [new_user.email],
+                fail_silently=False,
+            )
+            return redirect('account_verification') 
+            
     else:
         user_form = UserRegistrationForm()
         account_form = UserAccountForm()
     return render(request, 'register/register.html', {'user_form': user_form, 'account_form': account_form})
 
+def account_verification(request):
+    return render(request, 'register/account_verification.html')
+
+def activate(request, uidb64, token):
+    try:
+        uid = urlsafe_base64_decode(uidb64).decode()
+        user = User.objects.get(pk=uid)
+        user_account = UserAccount.objects.get(user=user)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist, UserAccount.DoesNotExist):
+        return render(request, 'register/activation_invalid.html')
+
+    if user is not None and default_token_generator.check_token(user, token) and not user_account.is_activated:
+        user.is_active = True
+        user.save()
+        user_account.is_activated = True
+        user_account.save()
+        return render(request, 'register/activation_success.html') 
+    else:
+        return render(request, 'register/activation_invalid.html')
 
 def login_view(request):
     if request.method == 'POST':
@@ -66,11 +104,12 @@ def login_view(request):
         password = request.POST['password']
         user = authenticate(request, username=username, password=password)
         if user is not None:
-            login(request, user)
-            # Redirect to a success page.
-            return redirect('/webapps2024/payapp/home')
+            if UserAccount.objects.get(user=user).is_activated:
+                login(request, user)
+                return redirect('/webapps2024/payapp/home')
+            else:
+                return render(request, 'register/login.html', {'error': 'Account is not activated, please check your email.'})
         else:
-            # Return an 'invalid login' error message.
             return render(request, 'register/login.html', {'error': 'Invalid username or password'})
     else:
         return render(request, 'register/login.html')
