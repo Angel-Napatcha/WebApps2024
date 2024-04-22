@@ -25,6 +25,8 @@ class TransactionForm(forms.Form):
         try:
             recipient = User.objects.get(email=email)
             UserAccount.objects.get(user=recipient)
+            if recipient.email == self.user.email:
+                raise ValidationError('You cannot send money to your own account.')
         except User.DoesNotExist:
             raise ValidationError('Recipient not found.')
         except UserAccount.DoesNotExist:
@@ -47,14 +49,59 @@ def home_view(request):
     balance = user_account.balance
     preferred_currency = user_account.preferred_currency
 
+    # Define a mapping of currency codes to symbols
+    currency_symbols = {
+        'USD': '$', 
+        'EUR': '€', 
+        'GBP': '£',
+    }
+
+    # Fetch transactions for the logged-in user
+    transactions = Transaction.objects.filter(
+        sender=request.user
+    ).union(
+        Transaction.objects.filter(recipient=request.user)
+    ).order_by('-timestamp')
+
+    # Prepare the data for the template
+    transaction_data = []
+    for transaction in transactions:
+        if transaction.sender == request.user:
+            transaction_type = 'Sent'
+            other_party = transaction.recipient.useraccount
+            sign = '-'
+            currency_symbol = currency_symbols.get(transaction.currency_sent, '')
+            amount = f"{sign}{currency_symbol}{transaction.amount_sent:.2f}"
+        else:
+            transaction_type = 'Received'
+            other_party = transaction.sender.useraccount
+            sign = '+'
+            currency_symbol = currency_symbols.get(transaction.currency_received, '')
+            amount = f"{sign}{currency_symbol}{transaction.amount_received:.2f}"
+
+        transaction_data.append({
+            'username': other_party.user.username,
+            'amount': amount,
+            'date': transaction.timestamp.strftime('%Y-%m-%d %H:%M'),
+            'type': transaction_type
+        })
+
+    # Update the preferred currency to use the symbol
+    preferred_currency_symbol = currency_symbols.get(preferred_currency, '')
+
     context = {
         'user': request.user,
-        'balance': "{:,.2f}".format(balance),  
-        'currency': preferred_currency
+        'balance': f"{preferred_currency_symbol}{balance:,.2f}",
+        'currency': preferred_currency_symbol,
+        'transactions': transaction_data 
     }
+
     return render(request, 'payapp/home.html', context)
 
 def transaction_view(request):
+    if not request.user.is_authenticated:
+        return HttpResponse('Please login to view this page.', status=401)
+    
     user = request.user
     form = TransactionForm(request.POST or None, user=user)
     if request.method == 'POST' and form.is_valid():
@@ -80,7 +127,26 @@ def transaction_view(request):
     return render(request, 'payapp/transaction.html', {'form': form})
 
 def transaction_complete_view(request):
-    return render(request, 'payapp/transaction_complete.html')
+    if not request.user.is_authenticated:
+        return HttpResponse('Please login to view this page.', status=401)
+    
+    last_transaction = Transaction.objects.filter(sender=request.user).order_by('timestamp').last()
+    
+    # Retrieve the preferred currency from the UserAccount model
+    user_account = UserAccount.objects.get(user=request.user)
+    preferred_currency_symbol = user_account.preferred_currency 
+    
+    context = {
+        'currency_symbol': preferred_currency_symbol,
+        'amount_sent': last_transaction.amount_sent,
+        'recipient_email': last_transaction.recipient.email,
+        'timestamp': last_transaction.timestamp.strftime('%B %d, %Y, %H:%M %p'),  # Format date as needed
+    }
+
+    return render(request, 'payapp/transaction_complete.html', context)
+
+def request_view(request):
+    return
 
 def logout_view(request):
     logout(request)

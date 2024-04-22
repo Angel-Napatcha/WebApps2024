@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Transaction Successful</title>
+    <title>Transaction Complete</title>
     <style>
         body {
             font-family: sans-serif;
@@ -21,22 +21,51 @@
             width: 300px;
             text-align: center;
         }
-        h1 {
-            color: #257C1E;
-            margin-bottom: 20px;
-            font-size: 1.5em;
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 5px;
         }
-        p {
-            color: #5B7DB1;
+        .check-circle {
+            background-color: #5CA256;
+            border-radius: 50%;
+            width: 30px; 
+            height: 30px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px; 
+        }
+        .check-circle svg {
+            fill: white;
+            width: 20px; 
+            height: 20px; 
+        }
+        h2 {
+            color: #5CA256;
+        }
+        .transaction-amount {
+            color: #3A506B;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        .recipient-info, .timestamp {
             font-size: 1em;
+            color: #4F6272;
             margin-bottom: 20px;
         }
-        a {
+        .back-link {
+            margin-top: 35px;
+            font-size: 0.85em;
+            text-align: left;
+            width: 100%;
+        }
+        .back-link a {
             color: #4F6272;
             text-decoration: none;
-            font-size: 1em;
         }
-        a:hover {
+        .back-link a:hover {
             color: #26364A;
             text-decoration: underline;
         }
@@ -44,8 +73,35 @@
 </head>
 <body>
     <div class="container">
-        <h1>Transaction Completed</h1>
-        <a href="{% url 'home' %}">Click here to return to your dashboard</a>.</p>
+        <div class="header-container">
+            <div class="check-circle">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
+                </svg>
+            </div>
+            <h2>Transfer Completed</h2>
+        </div>
+        <div class="transaction-amount">
+            {% if currency_symbol == 'USD' %}
+                ${{ amount_sent }}
+            {% elif currency_symbol == 'EUR' %}
+                €{{ amount_sent }}
+            {% elif currency_symbol == 'GBP' %}
+                £{{ amount_sent }}
+            {% else %}
+                {{ currency_symbol }}{{ amount_sent }} <!-- Fallback if there are other currencies -->
+            {% endif %}
+        </div>
+        <div class="recipient-info">
+            Paid To:<br>
+            <strong>{{ recipient_email }}</strong>
+        </div>        
+        <div class="timestamp">
+            {{ timestamp }}
+        </div>
+        <div class="back-link">
+            <a href="{% url 'home' %}">← Return to Homepage</a>
+        </div>
     </div>
 </body>
 </html>

@@ -1,139 +1,232 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Home</title>
     <style>
-        body {
-            font-family: sans-serif;
-            background-color: #F0F2F4;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .top-bar {
-            background-color: #3A506B;
-            color: white;
-            padding: 10px 20px;
-            width: 100%;
-            box-sizing: border-box;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.95em;
-        }
-        .top-bar a {
-            color: white;
-            text-decoration: none;
-            font-weight: bold;
-            width: 100%;
-            text-align: right;
-            margin-right: 1em;
-        }
-        .top-bar a:hover {
-            text-decoration: underline;
-        }
-        .greeting {
-            color: #f4f7fa;
-            font-size: 1.5em;
-            font-weight: 300;
-            margin: 20px 0;
-            width: 100%;
-            padding: 0 20px;
-            box-sizing: border-box;
-            text-align: left;
-        }
-        .content-wrapper {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            grid-gap: 20px;
-            width: 100%;
-            padding: 20px;
-            box-sizing: border-box;
-            margin-top: 10px;
-        }
-        .balance-box, .activities-box {
-            background: #CCD5DF;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        .balance-title {
-            color: #333;
-            font-size: 1.2em;
-            margin-top: 0.2em;
-            margin-bottom: 1em;
-            text-align: left;
-            font-weight: normal;
-        }
-        .balance-container {
-            display: flex;
-            align-items: center;
-            justify-content: start;
-        }
-        .balance-info {
-            color: #3A506B;
-            font-size: 2.5em;
-            font-weight: bold;
-            margin: 0;
-            text-align: left;
-        }
-        .currency {
-            color: #555;
-            font-size: 1.5em;
-            margin-top: 5px;
-            margin-left: 0.6em;
-            text-align: left;
-        }
-        .transfer-button-container {
-            margin-top: 20px;
-            text-align: left;
-        }
-        .button {
-            display: inline-block;
-            padding: 10px;
-            background-color: #5B7DB1;
-            color: white;
-            text-decoration: none;
-            font-size: 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            text-align: center;
-        }
-        .button:hover {
-            background-color: #486A8C;
-        }
-        .activities-title {
-            color: #333;
-            font-size: 1.2em;
-            margin-bottom: 10px;
-            text-align: left;
-        }
+      body {
+        font-family: sans-serif;
+        background-color: #f0f2f4;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .top-bar {
+        background-color: #3a506b;
+        color: white;
+        padding: 10px 20px;
+        width: 100%;
+        box-sizing: border-box;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.95em;
+      }
+      .top-bar a {
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+        width: 100%;
+        text-align: right;
+        margin-right: 1em;
+      }
+      .top-bar a:hover {
+        text-decoration: underline;
+      }
+      .greeting {
+        color: #f4f7fa;
+        font-size: 1.5em;
+        font-weight: 300;
+        margin: 20px 0;
+        width: 100%;
+        padding: 0 20px;
+        box-sizing: border-box;
+        text-align: left;
+      }
+      .content-wrapper {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        grid-gap: 20px;
+        width: 100%;
+        padding: 20px;
+        box-sizing: border-box;
+        margin-top: 10px;
+      }
+      .balance-box,
+      .transaction-history-box {
+        background: #ccd5df;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        box-sizing: border-box;
+        max-height: 82.5vh; 
+        overflow-y: auto; 
+      }
+      .title {
+        color: #333;
+        font-size: 1.2em;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        text-align: left;
+      }
+      .balance-container {
+        display: flex;
+        align-items: center;
+        justify-content: start;
+      }
+      .balance-info {
+        color: #3a506b;
+        font-size: 2.5em;
+        font-weight: bold;
+        margin: 0;
+        text-align: left;
+      }
+      .transfer-button-container {
+        margin-top: 20px;
+        text-align: left;
+      }
+      .button {
+        display: inline-block;
+        padding: 10px;
+        background-color: #5b7db1;
+        color: white;
+        text-decoration: none;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        text-align: center;
+        margin-right: 10px;
+      }
+      .button:hover {
+        opacity: 1;
+      }
+      .send-money {
+        background-color: #5ca256;
+        color: white;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      }
+      .send-money:hover {
+        background-color: #52904d;
+      }
+      .request-money {
+        background-color: #f59337;
+        color: white;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      }
+      .request-money:hover {
+        background-color: #de8531;
+      }
+      .send-money .icon-classname-for-transfer,
+      .request-money .icon-classname-for-request {
+        margin-right: 10px;
+        display: inline-block; /* Align icon with text */
+      }
+      .transactions-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .transaction-item {
+        display: flex;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #ececec;
+      }
+      .transaction-icon {
+        font-size: 20px;
+        width: 30px;
+      }
+      .transaction-details {
+        flex-grow: 1;
+        padding-left: 10px;
+      }
+      .transaction-username {
+        font-size: 1em;
+        color: #333;
+      }
+      .transaction-date {
+        font-size: 0.8em;
+        color: #999;
+      }
+      .transaction-amount {
+        text-align: right;
+        font-size: 1.2em;
+      }
+      .transaction-item.sent .transaction-icon {
+        color: #ff3b30;
+      }
+      .transaction-item.received .transaction-icon {
+        color: #2AC91D;
+      }
+      .negative {
+        color: #ff3b30;
+      }
+      .positive {
+        color: #2AC91D;
+      }
+      .no-transactions {
+        text-align: center;
+        padding: 20px 0;
+      }
     </style>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dbc@1.2.0/dist/dbc.min.css">
-</head>
-<body>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/dbc@1.2.0/dist/dbc.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body>
     <div class="top-bar">
-        <div class="greeting">Hi again, {{ user.username }}!</div>
-        <a href="{% url 'logout' %}">LOG OUT</a>
+      <div class="greeting">Hi again, {{ user.username }}!</div>
+      <a href="{% url 'logout' %}">LOG OUT</a>
     </div>
     <div class="content-wrapper">
-        <div class="balance-box">
-            <h2 class="balance-title">Current Balance</h2>
-            <div class="balance-container">
-                <div class="balance-info">{{ balance }}</div>
-                <div class="currency">{{ currency }}</div>
-            </div>
-            <div class="transfer-button-container">
-                <a href="{% url 'transaction' %}" class="button">Send Money</a>
-            </div>
+      <div class="balance-box">
+        <h2 class="title">Current Balance</h2>
+        <div class="balance-container">
+          <div class="balance-info">{{ balance }}</div>
         </div>
-        <div class="activities-box">
-            <div class="activities-title">Activities</div>
+        <div class="transfer-button-container">
+          <a href="{% url 'transaction' %}" class="button send-money">
+            <i class="fa fa-paper-plane"></i> Send Money
+          </a>
+          <a href="{% url 'money_request' %}" class="button request-money">
+            <i class="fa fa-hand-holding-usd"></i> Request Money
+          </a>
         </div>
+      </div>
+      <div class="transaction-history-box">
+        <h2 class="title">Transaction History</h2>
+        <div class="transactions-list">
+          {% for transaction in transactions %}
+          <div class="transaction-item {% if transaction.type == 'Sent' %} sent {% else %} received {% endif %}">
+            <div class="transaction-icon">
+              {% if transaction.type == 'Sent' %}
+              <i class="fa fa-arrow-up"></i>
+              {% else %}
+              <i class="fa fa-arrow-down"></i>
+              {% endif %}
+            </div>
+            <div class="transaction-details">
+              <div class="transaction-username">{{ transaction.username }}</div>
+              <div class="transaction-date">{{ transaction.date }}</div>
+            </div>
+            <div class="transaction-amount">
+                <span class="{% if transaction.type == 'Sent' %} negative {% else %} positive {% endif %}">
+                {{ transaction.amount }}
+              </span>
+            </div>
+          </div>
+          {% empty %}
+          <div class="no-transactions">No transactions found.</div>
+          {% endfor %}
+        </div>
+      </div>
     </div>
-</body>
+  </body>
 </html>

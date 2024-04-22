@@ -26,8 +26,10 @@
             margin-bottom: 20px;
         }
         .form-group {
-            margin-bottom: 10px;
+            margin-top: 10px;
+            margin-bottom: -5px;
             width: 100%;
+            position: relative;
         }
         .form-group input, .form-group select {
             width: 100%;
@@ -40,8 +42,11 @@
             color: #E55347;
             font-size: 0.8em;
             position: absolute;
-            margin-top: 10px;
-            width: calc(100% - 30px); 
+            top: 100%;
+            left: 0;
+            width: 100%;
+            padding: 5px;
+            margin-top: -3px;
         }
         .button {
             width: 100%;
@@ -52,32 +57,75 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
-            margin-top: 20px;
+            margin-top: 12px;
         }
         .button:hover {
             background-color: #486A8C;
+        }
+        .back-link {
+            margin-top: 35px;
+            font-size: 0.85em;
+            text-align: left;
+            width: 100%;
+        }
+        .back-link a {
+            color: #4F6272;
+            text-decoration: none;
+        }
+        .back-link a:hover {
+            color: #26364A;
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Transfer Money</h2>
+        <h2>Send Money</h2>
         <form method="post">
             {% csrf_token %}
             <div class="form-group">
                 {{ form.recipient_email }}
                 {% if form.recipient_email.errors %}
-                    <div class="errorlist">{{ form.recipient_email.errors }}</div>
+                <div class="errorlist">
+                    {% for error in form.recipient_email.errors %}
+                    {{ error }}
+                    {% endfor %}
+                </div>
                 {% endif %}
             </div>
             <div class="form-group">
                 {{ form.amount }}
                 {% if form.amount.errors %}
-                    <div class="errorlist">{{ form.amount.errors }}</div>
+                <div class="errorlist">
+                    {% for error in form.amount.errors %}
+                    {{ error }}
+                    {% endfor %}
+                </div>
                 {% endif %}
             </div>
-            <button type="submit" class="button">Send Money</button>
+            <button type="submit" class="button">Confirm</button>
+            <div class="back-link">
+                <a href="{% url 'home' %}">← Go back</a>
+            </div>
         </form>
     </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Select all form groups
+            const formGroups = document.querySelectorAll('.form-group');
+            formGroups.forEach(group => {
+                // Find any errorlist within this form group
+                const errorList = group.querySelector('.errorlist');
+                if (errorList) {
+                    // Adjust the margin-bottom based on the length of the error message
+                    const errorLength = errorList.textContent.trim().length;
+                    const newMarginBottom = Math.max(10, 15 + Math.floor(errorLength / 10));
+                    group.style.marginBottom = newMarginBottom + 'px';
+                } else {
+                    group.style.marginBottom = '8px';
+                }
+            });
+        });
+    </script>
 </body>
 </html>
