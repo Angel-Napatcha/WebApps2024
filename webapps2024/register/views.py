@@ -4,7 +4,7 @@ from register.models import UserAccount
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login
 from django.urls import reverse
 from django.core.mail import send_mail
 from django.contrib.auth.tokens import default_token_generator
@@ -78,18 +78,12 @@ def register_view(request):
                 fail_silently=False,
             )
             return redirect('account_verification')
-        # else:
-        #     # Log when the forms are not valid
-        #     print("User form is valid:", user_form.is_valid())
-        #     print("Account form is valid:", account_form.is_valid())
-        #     print("User form errors:", user_form.errors)
-        #     print("Account form errors:", account_form.errors)
     else:
         user_form = UserRegistrationForm()
         account_form = UserAccountForm()
     return render(request, 'register/register.html', {'user_form': user_form, 'account_form': account_form})
 
-def account_verification(request):
+def verify_account(request):
     return render(request, 'register/account_verification.html')
 
 def activate(request, uidb64, token):

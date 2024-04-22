@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Activation Failed</title>
+    <title>Transaction Successful</title>
     <style>
         body {
             font-family: sans-serif;
@@ -22,7 +22,7 @@
             text-align: center;
         }
         h1 {
-            color: #E55347;
+            color: #257C1E;
             margin-bottom: 20px;
             font-size: 1.5em;
         }
@@ -31,12 +31,21 @@
             font-size: 1em;
             margin-bottom: 20px;
         }
+        a {
+            color: #4F6272;
+            text-decoration: none;
+            font-size: 1em;
+        }
+        a:hover {
+            color: #26364A;
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Activation Failed</h1>
-        <p>Sorry, your account could not be activated. Please ensure you have used the correct link or contact support.</p>
+        <h1>Transaction Completed</h1>
+        <a href="{% url 'home' %}">Click here to return to your dashboard</a>.</p>
     </div>
 </body>
 </html>

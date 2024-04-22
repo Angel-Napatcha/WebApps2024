@@ -6,7 +6,7 @@
     <style>
         body {
             font-family: sans-serif;
-            background-color: #F7F7F7;
+            background-color: #F0F2F4;
             margin: 0;
             padding: 0;
             display: flex;
@@ -45,15 +45,21 @@
             box-sizing: border-box;
             text-align: left;
         }
+        .content-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            grid-gap: 20px;
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+            margin-top: 10px;
+        }
         .balance-box, .activities-box {
             background: #CCD5DF;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            margin: 10px 0;
             padding: 20px;
-            width: calc(100% - 40px);
             box-sizing: border-box;
-            margin-top: 1.5em;
         }
         .balance-title {
             color: #333;
@@ -61,12 +67,12 @@
             margin-top: 0.2em;
             margin-bottom: 1em;
             text-align: left;
-            font-weight: normal; 
-        }        
+            font-weight: normal;
+        }
         .balance-container {
             display: flex;
-            align-items: center; /* Centers the balance and currency vertically */
-            justify-content: start; /* Aligns content to the start of the flex container */
+            align-items: center;
+            justify-content: start;
         }
         .balance-info {
             color: #3A506B;
@@ -82,8 +88,23 @@
             margin-left: 0.6em;
             text-align: left;
         }
-        .activities-box {
+        .transfer-button-container {
             margin-top: 20px;
+            text-align: left;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px;
+            background-color: #5B7DB1;
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .button:hover {
+            background-color: #486A8C;
         }
         .activities-title {
             color: #333;
@@ -92,21 +113,27 @@
             text-align: left;
         }
     </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dbc@1.2.0/dist/dbc.min.css">
 </head>
 <body>
     <div class="top-bar">
         <div class="greeting">Hi again, {{ user.username }}!</div>
         <a href="{% url 'logout' %}">LOG OUT</a>
     </div>
-    <div class="balance-box">
-        <h2 class="balance-title">Current Balance</h2>
-        <div class="balance-container"> 
-            <div class="balance-info">{{ balance }}</div>
-            <div class="currency">{{ currency }}</div>
+    <div class="content-wrapper">
+        <div class="balance-box">
+            <h2 class="balance-title">Current Balance</h2>
+            <div class="balance-container">
+                <div class="balance-info">{{ balance }}</div>
+                <div class="currency">{{ currency }}</div>
+            </div>
+            <div class="transfer-button-container">
+                <a href="{% url 'transaction' %}" class="button">Send Money</a>
+            </div>
         </div>
-    </div>
-    <div class="activities-box">
-        <div class="activities-title">Activities</div>
+        <div class="activities-box">
+            <div class="activities-title">Activities</div>
+        </div>
     </div>
 </body>
 </html>

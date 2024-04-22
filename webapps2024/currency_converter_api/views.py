@@ -1,5 +1,7 @@
-from django.shortcuts import render
+import requests
 from django.http import JsonResponse
+from django.core.exceptions import ValidationError
+from decimal import Decimal
 
 # Hardcoded exchange rates
 EXCHANGE_RATES = {
@@ -8,17 +10,17 @@ EXCHANGE_RATES = {
     'EUR': {'GBP': 0.86, 'USD': 1.07},
 }
 
-def convert_currency(request, currency1, currency2, amount):
+def construct_api(request, from_currency, to_currency, amount):
     try:
         amount = float(amount)
-        rates = EXCHANGE_RATES.get(currency1, {})
-        if currency2 in rates:
-            rate = rates[currency2]
+        rates = EXCHANGE_RATES.get(from_currency, {})
+        if to_currency in rates:
+            rate = rates[to_currency]
             converted_amount = amount * rate
             return JsonResponse({
                 'original_amount': amount,
-                'original_currency': currency1,
-                'converted_currency': currency2,
+                'original_currency': from_currency,
+                'converted_currency': to_currency,
                 'converted_amount': converted_amount,
                 'rate': rate
             })
@@ -29,3 +31,14 @@ def convert_currency(request, currency1, currency2, amount):
     except KeyError:
         return JsonResponse({'error': 'Unsupported currency provided.'}, status=404)
 
+def convert_currency(from_currency, to_currency, amount):
+    api_url = f"http://localhost:8000/api/conversion/{from_currency}/{to_currency}/{amount}/"
+    try:
+        response = requests.get(api_url)
+        if response.status_code == 200:
+            data = response.json()
+            return Decimal(data['converted_amount'])
+        else:
+            raise ValidationError(f"Currency conversion failed with status code: {response.status_code}")
+    except requests.RequestException as e:
+        raise ValidationError(f"Failed to connect to currency conversion service: {str(e)}")
