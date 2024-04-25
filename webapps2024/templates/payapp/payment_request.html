@@ -1,8 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Transfer Money</title>
     <style>
         body {
             font-family: sans-serif;
@@ -31,7 +28,7 @@
             width: 100%;
             position: relative;
         }
-        .form-group input, .form-group select {
+        .form-group input, .form-group select, .form-group textarea{
             width: 100%;
             padding: 15px;
             border: 1px solid #AAB7C4;
@@ -77,10 +74,13 @@
             text-decoration: underline;
         }
     </style>
+<head>
+    <meta charset="UTF-8">
+    <title>Request Money</title>
 </head>
 <body>
     <div class="container">
-        <h2>Send Money</h2>
+        <h2>Request Money</h2>
         <form method="post">
             {% csrf_token %}
             <div class="form-group">
@@ -103,7 +103,17 @@
                 </div>
                 {% endif %}
             </div>
-            <button type="submit" class="button">Send</button>
+            <div class="form-group">
+                {{ form.message }}
+                {% if form.message.errors %}
+                <div class="errorlist">
+                    {% for error in form.message.errors %}
+                    {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            <button type="submit" class="button">Request</button>
             <div class="back-link">
                 <a href="{% url 'home' %}">← Go back</a>
             </div>

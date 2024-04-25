@@ -47,22 +47,44 @@
       }
       .content-wrapper {
         display: grid;
-        grid-template-columns: 1fr 2fr;
+        grid-template-columns: 1.35fr 2fr;
+        grid-template-rows: auto auto;
         grid-gap: 20px;
         width: 100%;
         padding: 20px;
         box-sizing: border-box;
         margin-top: 10px;
       }
-      .balance-box,
+      .left-column {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .balance-box {
+        background: #ccd5df;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        box-sizing: border-box;
+        overflow-y: auto;
+        height: calc(27.5vh - 10px);
+      }
+      .payment-requests-box {
+        background: #ccd5df;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        box-sizing: border-box;
+        height: calc(55vh - 10px);
+      }
       .transaction-history-box {
         background: #ccd5df;
         border-radius: 8px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         padding: 20px;
         box-sizing: border-box;
-        max-height: 82.5vh; 
-        overflow-y: auto; 
+        max-height: 82.5vh;
+        overflow-y: auto;
       }
       .title {
         color: #333;
@@ -80,11 +102,11 @@
         color: #3a506b;
         font-size: 2.5em;
         font-weight: bold;
-        margin: 0;
+        margin-top: 10px;
         text-align: left;
       }
       .transfer-button-container {
-        margin-top: 20px;
+        margin-top: 25px;
         text-align: left;
       }
       .button {
@@ -121,7 +143,127 @@
       .send-money .icon-classname-for-transfer,
       .request-money .icon-classname-for-request {
         margin-right: 10px;
-        display: inline-block; /* Align icon with text */
+        display: inline-block;
+      }
+      .request-actions button {
+          font-size: 0.85em; 
+          padding: 6px 12px;
+          border: none; 
+          border-radius: 5px; 
+          cursor: pointer;
+          transition: background-color 0.3s ease;
+          margin: 0 5px; 
+      }
+      .approve-button {
+          background-color: #4CAF50; 
+          color: white;
+      }
+      .reject-button {
+          background-color: #f44336; 
+          color: white;
+      }
+      .request-actions button:hover {
+          opacity: 0.85; 
+      }
+      .request-actions form {
+          display: inline; 
+      }
+      .tab {
+        display: flex;
+        overflow: hidden;
+        background-color: #ccd5df;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        margin-top: 20px;
+        margin-bottom: 10px;
+      }
+      .tab button {
+        background-color: #f0f2f4;
+        flex: 1; /* Flex grow to take up equal space */
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 10px 16px;
+        transition: background-color 0.3s ease;
+        font-size: 15px;
+        color: #333;
+        text-align: center;
+        border-right: 1px solid #bbb;
+        border-radius: 8px 0 0 0;
+      }
+      .tab button:hover {
+        background-color: #dbe2ea;
+      }
+      .tab button:last-child {
+        border-right: none;
+        border-radius: 0 8px 0 0;
+      }
+      .tab button.active {
+        background-color: #5b7db1;
+        color: white;
+        border-radius: 8px 0 0 8px;
+      }
+      .tab button:last-child.active {
+        border-radius: 0 8px 8px 0;
+      }
+      .tab-content {
+        display: none;
+        padding: 5px 0px;
+        background-color: #ccd5df;
+        height: 36vh;
+        overflow-y: auto;
+      }
+      .tab-content ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .tab-content li {
+        padding: 10px 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #ececec;
+        background-color: #ECECEC;
+        border-radius: 8px;
+      }
+      .no-requests {
+        text-align: center;
+        padding: 20px 0;
+        color: #999;
+      }
+      .semi-bold {
+        font-weight: 600;
+      }
+      .request-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 10px;
+        font-size: 0.88em;
+        padding-bottom: 12px;
+      }
+      .request-item:not(:last-child) {
+        border-bottom: 1.5px solid #E4E2E0; /* Only adds a border between items */
+      }
+      .request-details {
+        line-height: 1.5;
+      }
+      .request-details b {
+        font-weight: 550; 
+        color: #615F5D;
+      } 
+      .request-details span.request-status {
+        font-weight: bold;
+      }
+      .request-details span.request-status.pending {
+        color: #f59337;
+      }
+      .request-details span.request-status.rejected {
+        color: #ff3b30;
+      }
+      .request-details span.request-status.approved {
+        color: #2ac91d;
       }
       .transactions-list {
         list-style: none;
@@ -158,27 +300,21 @@
         color: #ff3b30;
       }
       .transaction-item.received .transaction-icon {
-        color: #2AC91D;
+        color: #2ac91d;
       }
       .negative {
         color: #ff3b30;
       }
       .positive {
-        color: #2AC91D;
+        color: #2ac91d;
       }
       .no-transactions {
         text-align: center;
         padding: 20px 0;
       }
     </style>
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/dbc@1.2.0/dist/dbc.min.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-    />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dbc@1.2.0/dist/dbc.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
   </head>
   <body>
     <div class="top-bar">
@@ -186,18 +322,90 @@
       <a href="{% url 'logout' %}">LOG OUT</a>
     </div>
     <div class="content-wrapper">
-      <div class="balance-box">
-        <h2 class="title">Current Balance</h2>
-        <div class="balance-container">
-          <div class="balance-info">{{ balance }}</div>
+      <div class="left-column">
+        <div class="balance-box">
+          <h2 class="title">Current Balance</h2>
+          <div class="balance-container">
+            <div class="balance-info">{{ balance }}</div>
+          </div>
+          <div class="transfer-button-container">
+            <a href="{% url 'transaction' %}" class="button send-money">
+              <i class="fa fa-paper-plane"></i> Send Money
+            </a>
+            <a href="{% url 'request_payment' %}" class="button request-money">
+              <i class="fa fa-hand-holding-usd"></i> Request Money
+            </a>
+          </div>
         </div>
-        <div class="transfer-button-container">
-          <a href="{% url 'transaction' %}" class="button send-money">
-            <i class="fa fa-paper-plane"></i> Send Money
-          </a>
-          <a href="{% url 'money_request' %}" class="button request-money">
-            <i class="fa fa-hand-holding-usd"></i> Request Money
-          </a>
+        <div class="payment-requests-box">
+          <h2 class="title">Payment Requests</h2>
+          <div class="tab">
+            <button class="tablinks" onclick="openTab(event, 'Sent')" data-tab="Sent">
+              Requests Sent
+            </button>
+            <button class="tablinks" onclick="openTab(event, 'Received')" data-tab="Received">
+              Requests Received
+            </button>            
+          </div>
+
+          <div id="Sent" class="tab-content">
+            {% if sent_requests %}
+            <ul>
+              {% for request in sent_requests %}
+              <li class="request-item">
+                <div class="request-details">
+                  <b>To:</b> {{ request.recipient }}<br />
+                  <b>Amount:</b> {{ request.amount }}<br />
+                  {% if request.message %}
+                  <b>Message:</b> {{ request.message }}<br />
+                  {% endif %}
+                  <b>Date:</b> {{ request.date }}<br />
+                  <b>Status:</b> <span class="request-status {{ request.status|lower }}">{{ request.status }}</span>
+                </div>
+              </li>
+              {% endfor %}
+            </ul>
+            {% else %}
+            <p class="no-requests">No sent requests.</p>
+            {% endif %}
+          </div>
+          
+          <div id="Received" class="tab-content">
+            {% if received_requests %}
+              <ul>
+                {% for request in received_requests %}
+                  <li class="request-item" id="request-item-{{ request.id }}">
+                    <div class="request-details">
+                      <b>From:</b> {{ request.requester }}<br />
+                      <b>Amount:</b> {{ request.amount }}<br />
+                      {% if request.message %}
+                        <b>Message:</b> {{ request.message }}<br />
+                      {% endif %}
+                      <b>Date:</b> {{ request.date }}<br />
+                      <b>Status:</b> <span class="request-status {{ request.status|lower }}" id="status-{{ request.id }}">{{ request.status }}</span>
+                    </div>
+                    {% if request.status == 'Pending' %}
+                      <div class="request-actions">
+                        <form method="post" action="{% url 'handle_payment_request' request.id %}">
+                          {% csrf_token %}
+                          <input type="hidden" name="action" value="accept">
+                          <button type="submit" class="button approve-button">Approve</button>
+                        </form>
+                        <form method="post" action="{% url 'handle_payment_request' request.id %}">
+                          {% csrf_token %}
+                          <input type="hidden" name="action" value="reject">
+                          <button type="submit" class="button reject-button">Reject</button>
+                        </form>
+                      </div>
+                    {% endif %}
+                  </li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              <p class="no-requests">No received requests.</p>
+            {% endif %}
+          </div>
+
         </div>
       </div>
       <div class="transaction-history-box">
@@ -227,6 +435,81 @@
           {% endfor %}
         </div>
       </div>
-    </div>
+      
+      <script>
+        // Function to open tabs and remember the last opened tab
+        function openTab(evt, tabName) {
+          var i, tabcontent, tablinks;
+          tabcontent = document.getElementsByClassName("tab-content");
+          for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+          }
+          tablinks = document.getElementsByClassName("tablinks");
+          for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+          }
+          document.getElementById(tabName).style.display = "block";
+          evt.currentTarget.className += " active";
+          // Save the current tab in local storage
+          localStorage.setItem('activeTab', tabName);
+        }
+        // Ensure the correct tab is open based on the last user interaction
+        document.addEventListener('DOMContentLoaded', function() {
+          var activeTab = localStorage.getItem('activeTab');
+          var tabcontent = document.getElementsByClassName("tab-content");
+          var tablinks = document.getElementsByClassName("tablinks");
+
+          // Hide all tab content by default
+          for (let i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+          }
+
+          // Remove active class from all tab links
+          for (let i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+          }
+
+          // If there is an active tab saved, show the content and highlight the tab
+          if (activeTab) {
+            var activeTabContent = document.getElementById(activeTab);
+            var activeTabLink = document.querySelector(".tablinks[data-tab='" + activeTab + "']");
+            if (activeTabContent && activeTabLink) {
+              activeTabContent.style.display = "block";
+              activeTabLink.className += " active";
+            }
+          } else {
+            // Default to the first tab content and highlight the first tab link
+            if(tabcontent[0]) tabcontent[0].style.display = "block";
+            if(tablinks[0]) tablinks[0].className += " active";
+          }
+        });
+      </script>
+
+    <script>
+      function handleRequestAction(requestId, action) {
+        const url = `/handle-request/${requestId}/?action=${action}`;
+
+        fetch(url, {
+          method: 'GET',
+          headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+          },
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status) {
+            // Update the UI based on the response
+            document.getElementById(`status-${requestId}`).innerText = data.status;
+            document.getElementById(`request-item-${requestId}`).querySelectorAll('.request-actions').forEach(actions => actions.style.display = 'none');
+          } else {
+            alert(data.error || 'Unknown error occurred');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Failed to process request: ' + error);
+        });
+      }
+    </script>
   </body>
 </html>
