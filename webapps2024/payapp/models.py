@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from register.models import UserAccount
 from django.utils import timezone
 
+
 class Transaction(models.Model):
     sender = models.ForeignKey(User, related_name='sent_transactions', on_delete=models.CASCADE)
     recipient = models.ForeignKey(User, related_name='received_transactions', on_delete=models.CASCADE)
@@ -23,7 +24,7 @@ class Transaction(models.Model):
         super(Transaction, self).save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.amount_sent} {self.currency_sent} from {self.sender.username} to {self.recipient.username} as {self.amount_received} {self.currency_received} on {self.timestamp.strftime('%Y-%m-%d %H:%M:%S')}"
+        return f"{self.amount_sent} {self.currency_sent} from {self.sender.username} to {self.recipient.username} as {self.amount_received} {self.currency_received} ({self.status}) on {self.timestamp.strftime('%Y-%m-%d %H:%M:%S')}"
     
     
 class PaymentRequest(models.Model):
@@ -41,3 +42,13 @@ class PaymentRequest(models.Model):
         
     def __str__(self):
         return f"Request by {self.requester.username} to {self.recipient.username} for {self.amount_requested} {self.requester.useraccount.preferred_currency} - {self.amount_in_recipient_currency} {self.recipient.useraccount.preferred_currency} ({self.status}) on {self.timestamp.strftime('%Y-%m-%d %H:%M:%S')}"
+  
+    
+class Notification(models.Model):
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    message = models.TextField()
+    read = models.BooleanField(default=False)
+    timestamp = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f'Notification for {self.recipient.username} - Read: {self.read}'

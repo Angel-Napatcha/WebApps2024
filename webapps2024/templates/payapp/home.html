@@ -24,16 +24,19 @@
         align-items: center;
         font-size: 0.95em;
       }
-      .top-bar a {
+      .top-bar .link-container {
+        margin-left: auto; 
+        padding: 0 20px; 
+      }
+      .top-bar .link-container a {
         color: white;
         text-decoration: none;
         font-weight: bold;
-        width: 100%;
-        text-align: right;
-        margin-right: 1em;
+        display: inline-block;
+        width: 70px;
       }
-      .top-bar a:hover {
-        text-decoration: underline;
+      .top-bar .link-container a:hover {
+        text-decoration: underline; /* Adds underline on hover */
       }
       .greeting {
         color: #f4f7fa;
@@ -44,6 +47,62 @@
         padding: 0 20px;
         box-sizing: border-box;
         text-align: left;
+      }
+      .notification-popup {
+        position: fixed;
+        width: 300px;
+        background: #ccd5df; 
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        border-radius: 10px;
+        top: 50px;
+        right: 20px;
+        z-index: 1000;
+        padding: 15px;
+        border: 1px solid #3a506b; /* Harmonizing with top bar */
+      }
+      .notification-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: #3a506b;
+        margin-left: 15px;
+      }
+      .notification-body {
+        max-height: 300px;
+        color: #333; 
+        overflow-y: auto;
+        font-size: 0.95em; 
+        padding: 10px 15px; 
+      }
+      .notification-body ul {
+        list-style-type: none; 
+        padding: 0; 
+        margin: 0;
+      }
+      .notification-body ul li {
+        background-color: #f0f2f4; 
+        margin-bottom: 10px; 
+        padding: 10px; 
+        border-radius: 8px; 
+        box-shadow: 0 2px 5px rgba(0,0,0,0.15); 
+        border-left: 5px solid #5b7db1; 
+      }
+      .notification-icon {
+        position: relative;
+        margin-right: 15px;
+        font-size: 22.5px;
+        cursor: pointer;
+      }
+      .notification-indicator {
+        position: absolute;
+        top: 2px; 
+        left: 10px; 
+        width: 10px; 
+        height: 10px; 
+        background-color: red;
+        border-radius: 50%;
+        display: inline-block;
+        border: 1px solid white;
       }
       .content-wrapper {
         display: grid;
@@ -319,7 +378,32 @@
   <body>
     <div class="top-bar">
       <div class="greeting">Hi again, {{ user.username }}!</div>
-      <a href="{% url 'logout' %}">LOG OUT</a>
+      <div class="notification-icon">
+        <i class="fas fa-bell"></i>
+        {% if unread_notifications_count > 0 %}
+          <span class="notification-indicator"></span>
+        {% endif %}
+      </div>
+      <div id="notificationPopup" class="notification-popup" style="display: none;">
+        <div class="notification-header">
+          <h3>Notifications</h3>
+        </div>
+        <div class="notification-body">
+          {% if notifications %}
+            <ul>
+              {% for notification in notifications %}
+                <li>{{ notification.message }}</li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p>No new notifications.</p>
+          {% endif %}
+        </div>
+      </div>
+      
+      <div class="link-container">
+        <a href="{% url 'logout' %}">LOG OUT</a>
+      </div>
     </div>
     <div class="content-wrapper">
       <div class="left-column">
@@ -436,54 +520,54 @@
         </div>
       </div>
       
-      <script>
-        // Function to open tabs and remember the last opened tab
-        function openTab(evt, tabName) {
-          var i, tabcontent, tablinks;
-          tabcontent = document.getElementsByClassName("tab-content");
-          for (i = 0; i < tabcontent.length; i++) {
-            tabcontent[i].style.display = "none";
-          }
-          tablinks = document.getElementsByClassName("tablinks");
-          for (i = 0; i < tablinks.length; i++) {
-            tablinks[i].className = tablinks[i].className.replace(" active", "");
-          }
-          document.getElementById(tabName).style.display = "block";
-          evt.currentTarget.className += " active";
-          // Save the current tab in local storage
-          localStorage.setItem('activeTab', tabName);
+    <script>
+      // Function to open tabs and remember the last opened tab
+      function openTab(evt, tabName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tab-content");
+        for (i = 0; i < tabcontent.length; i++) {
+          tabcontent[i].style.display = "none";
         }
-        // Ensure the correct tab is open based on the last user interaction
-        document.addEventListener('DOMContentLoaded', function() {
-          var activeTab = localStorage.getItem('activeTab');
-          var tabcontent = document.getElementsByClassName("tab-content");
-          var tablinks = document.getElementsByClassName("tablinks");
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+          tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.className += " active";
+        // Save the current tab in local storage
+        localStorage.setItem('activeTab', tabName);
+      }
+      // Ensure the correct tab is open based on the last user interaction
+      document.addEventListener('DOMContentLoaded', function() {
+        var activeTab = localStorage.getItem('activeTab');
+        var tabcontent = document.getElementsByClassName("tab-content");
+        var tablinks = document.getElementsByClassName("tablinks");
 
-          // Hide all tab content by default
-          for (let i = 0; i < tabcontent.length; i++) {
-            tabcontent[i].style.display = "none";
-          }
+        // Hide all tab content by default
+        for (let i = 0; i < tabcontent.length; i++) {
+          tabcontent[i].style.display = "none";
+        }
 
-          // Remove active class from all tab links
-          for (let i = 0; i < tablinks.length; i++) {
-            tablinks[i].className = tablinks[i].className.replace(" active", "");
-          }
+        // Remove active class from all tab links
+        for (let i = 0; i < tablinks.length; i++) {
+          tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
 
-          // If there is an active tab saved, show the content and highlight the tab
-          if (activeTab) {
-            var activeTabContent = document.getElementById(activeTab);
-            var activeTabLink = document.querySelector(".tablinks[data-tab='" + activeTab + "']");
-            if (activeTabContent && activeTabLink) {
-              activeTabContent.style.display = "block";
-              activeTabLink.className += " active";
-            }
-          } else {
-            // Default to the first tab content and highlight the first tab link
-            if(tabcontent[0]) tabcontent[0].style.display = "block";
-            if(tablinks[0]) tablinks[0].className += " active";
+        // If there is an active tab saved, show the content and highlight the tab
+        if (activeTab) {
+          var activeTabContent = document.getElementById(activeTab);
+          var activeTabLink = document.querySelector(".tablinks[data-tab='" + activeTab + "']");
+          if (activeTabContent && activeTabLink) {
+            activeTabContent.style.display = "block";
+            activeTabLink.className += " active";
           }
-        });
-      </script>
+        } else {
+          // Default to the first tab content and highlight the first tab link
+          if(tabcontent[0]) tabcontent[0].style.display = "block";
+          if(tablinks[0]) tablinks[0].className += " active";
+        }
+      });
+    </script>
 
     <script>
       function handleRequestAction(requestId, action) {
@@ -510,6 +594,46 @@
           alert('Failed to process request: ' + error);
         });
       }
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          var bellIcon = document.querySelector('.notification-icon');
+          var notificationPopup = document.getElementById('notificationPopup');
+      
+          bellIcon.addEventListener('click', function() {
+            // Toggle the popup display
+            var displayStatus = notificationPopup.style.display;
+            notificationPopup.style.display = displayStatus === 'block' ? 'none' : 'block';
+            
+            // If there's a red dot indicator, remove it and mark notifications as read
+            var notificationIndicator = bellIcon.querySelector('.notification-indicator');
+            if (notificationIndicator) {
+              notificationIndicator.remove();
+              // Send a POST request to mark notifications as read
+              fetch('{% url "read_notifications" %}', {
+                method: 'POST',
+                headers: {
+                  'X-CSRFToken': '{{ csrf_token }}', // Ensure CSRF token is sent if this is a POST request
+                  'Content-Type': 'application/json'
+                },
+              })
+              .then(response => response.json())
+              .then(data => {
+                console.log('Notifications marked as read.');
+              })
+              .catch(error => console.error('Error:', error));
+            }
+          });
+        
+          // Handle closing the notification popup when clicking anywhere on the page
+          window.addEventListener('click', function(event) {
+            // If the clicked element is not the notification icon or any of its descendants
+            if (!bellIcon.contains(event.target) && !notificationPopup.contains(event.target)) {
+              notificationPopup.style.display = 'none';
+            }
+          });
+        });
     </script>
   </body>
 </html>

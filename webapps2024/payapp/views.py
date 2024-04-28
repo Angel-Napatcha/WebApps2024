@@ -5,8 +5,7 @@ from django.http import JsonResponse
 from django import forms
 from django.http import HttpResponse
 from register.models import UserAccount
-from payapp.models import Transaction
-from payapp.models import PaymentRequest
+from payapp.models import Transaction, PaymentRequest, Notification
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.core.exceptions import ValidationError
@@ -43,6 +42,7 @@ class TransactionForm(forms.Form):
         if sender_account.balance < amount:
             raise ValidationError("The amount exceeds your current balance.")
         return amount
+
 
 class PaymentRequestForm(forms.Form):
     recipient_email = forms.EmailField(max_length=30, required=True, widget=forms.EmailInput(attrs={'placeholder': 'Enter recipient email', 'class': 'form-group'}))
@@ -134,9 +134,9 @@ def home_view(request):
         'date': req.timestamp.strftime('%Y-%m-%d %H:%M'),
         'status': req.status
     } for req in received_requests]
-
-    # Update the preferred currency to use the symbol
-    preferred_currency_symbol = currency_symbols.get(preferred_currency, '')
+    
+    notifications = Notification.objects.filter(recipient=request.user).order_by('-timestamp')
+    unread_notifications_count = Notification.objects.filter(recipient=request.user, read=False).count()
 
     context = {
         'user': request.user,
@@ -144,7 +144,9 @@ def home_view(request):
         'currency': preferred_currency_symbol,
         'transactions': transaction_data,
         'sent_requests': sent_request_data,
-        'received_requests': received_request_data
+        'received_requests': received_request_data,
+        'notifications': notifications,
+        'unread_notifications_count' : unread_notifications_count
     }
 
     return render(request, 'payapp/home.html', context)
@@ -214,9 +216,14 @@ def transaction_complete_view(request):
 def request_payment_view(request):
     if not request.user.is_authenticated:
         return HttpResponse('Please login to view this page.', status=401)
-    
+
     user = request.user
     form = PaymentRequestForm(request.POST or None, requester=user)
+    currency_symbols = {
+        'USD': '$', 
+        'EUR': '€', 
+        'GBP': '£',
+    }
     
     if request.method == 'POST' and form.is_valid():
         recipient_email = form.cleaned_data['recipient_email']
@@ -225,24 +232,25 @@ def request_payment_view(request):
         message = form.cleaned_data.get('message', '')
         
         # Fetch the sender and recipient currency details
-        sender_currency = UserAccount.objects.get(user=recipient).preferred_currency
-        recipient_currency = UserAccount.objects.get(user=user).preferred_currency
+        sender_account = UserAccount.objects.get(user=recipient)
+        recipient_account = UserAccount.objects.get(user=user)
+        sender_currency_symbol = currency_symbols.get(sender_account.preferred_currency, '')
         
         # Convert the amount if the currencies are different
-        if sender_currency != recipient_currency:
-            amount_sent = convert_currency(recipient_currency, sender_currency, amount)
+        if sender_account.preferred_currency != recipient_account.preferred_currency:
+            amount_sent = convert_currency(recipient_account.preferred_currency, sender_account.preferred_currency, amount)
         else:
             amount_sent = amount
-        
+
         transaction = Transaction.objects.create(
             sender=recipient,
-            recipient=user, 
+            recipient=user,
             amount_sent=amount_sent,
-            amount_received=amount, 
-            timestamp=timezone.now(), 
+            amount_received=amount,
+            timestamp=timezone.now(),
             status='Pending'
         )
-       
+
         PaymentRequest.objects.create(
             requester=user,
             recipient=recipient,
@@ -254,8 +262,17 @@ def request_payment_view(request):
             status='Pending'
         )
 
+        formatted_amount = "{:.2f}".format(amount_sent)
+        
+        Notification.objects.create(
+            recipient=recipient,
+            message=f"You have received a payment request of {sender_currency_symbol}{formatted_amount} from {user.username}.",
+            read=False,
+            timestamp=timezone.now()
+        )
+
         return redirect('request_complete')  # Redirect to a success page after submission
-    
+
     return render(request, 'payapp/payment_request.html', {'form': form})
 
 def request_payment_complete_view(request):
@@ -302,29 +319,77 @@ def handle_payment_request_view(request, request_id):
 def accept_payment_request(request, payment_request):
     sender_account = UserAccount.objects.get(user=payment_request.transaction.sender)
     recipient_account = UserAccount.objects.get(user=payment_request.transaction.recipient)
+    currency_symbols = {
+        'USD': '$', 
+        'EUR': '€', 
+        'GBP': '£',
+    }
+    currency_symbol = currency_symbols.get(recipient_account.preferred_currency, '')
 
     if sender_account.balance < payment_request.transaction.amount_sent:
         return HttpResponse('<p>Insufficient funds to complete this transaction.</p>', status=400)
 
     with transaction.atomic():
         payment_request.transaction.status = 'Completed'
+        payment_request.transaction.save()
+        
         payment_request.status = 'Approved'
         payment_request.save()
-        payment_request.transaction.save()
 
         sender_account.balance -= payment_request.transaction.amount_sent
         sender_account.save()
         recipient_account.balance += payment_request.transaction.amount_received
         recipient_account.save()
+        
+        Notification.objects.create(
+        recipient=payment_request.requester,
+        message=f'Your payment request of {currency_symbol}{payment_request.transaction.amount_received} to {payment_request.transaction.sender} has been approved.',
+        read=False
+        )
 
     return redirect('home')
 
 def reject_payment_request(request, payment_request):
+    recipient_account = UserAccount.objects.get(user=payment_request.transaction.recipient)
+    currency_symbols = {
+        'USD': '$', 
+        'EUR': '€', 
+        'GBP': '£',
+    }
+    currency_symbol = currency_symbols.get(recipient_account.preferred_currency, '')
+    
     with transaction.atomic():
+        payment_request.transaction.status = 'Failed'
+        payment_request.transaction.save()
+        
         payment_request.status = 'Rejected'
         payment_request.save()
+        
+        Notification.objects.create(
+        recipient=payment_request.requester,
+        message=f'Your payment request of {currency_symbol}{payment_request.transaction.amount_received} to {payment_request.transaction.sender} has been rejected.',
+        read=False
+        )
 
     return redirect('home')
+
+def notifications_view(request):
+     # Retrieve unread notifications for the logged-in user
+    notifications = Notification.objects.filter(recipient=request.user, read=False).order_by('-timestamp')
+    
+    # Mark notifications as read
+    notifications.update(read=True)
+
+    # Serialize the notifications data
+    notifications_data = [{
+        'id': notification.id,
+        'message': notification.message,
+        'read': notification.read,
+        'timestamp': notification.timestamp.strftime('%Y-%m-%d %H:%M:%S')
+    } for notification in notifications]
+
+    # Return the serialized data as JSON
+    return JsonResponse({'notifications': notifications_data})
 
 def logout_view(request):
     logout(request)
