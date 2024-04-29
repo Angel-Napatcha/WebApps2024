@@ -86,9 +86,9 @@ def home_view(request):
     # Fetch transactions for the logged-in user
     transactions = Transaction.objects.filter(
         sender=request.user,
-        status='Completed'
+        status='Successful'
     ).union(
-        Transaction.objects.filter(recipient=request.user, status='Completed')
+        Transaction.objects.filter(recipient=request.user, status='Successful')
     ).order_by('-timestamp')
 
      # Prepare the data for the template
@@ -187,7 +187,7 @@ def transaction_view(request):
             amount_sent=amount_sent,
             amount_received=amount_received,
             timestamp=timezone.now(),
-            status='Completed'
+            status='Successful'
         )
         
         return redirect('transaction_complete')
@@ -330,7 +330,7 @@ def accept_payment_request(request, payment_request):
         return HttpResponse('<p>Insufficient funds to complete this transaction.</p>', status=400)
 
     with transaction.atomic():
-        payment_request.transaction.status = 'Completed'
+        payment_request.transaction.status = 'Successful'
         payment_request.transaction.save()
         
         payment_request.status = 'Approved'

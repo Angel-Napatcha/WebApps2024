@@ -10,7 +10,7 @@ class Transaction(models.Model):
     amount_sent = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     amount_received = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)  # Initially blank
     timestamp = models.DateTimeField(default=timezone.now)
-    status = models.CharField(max_length=10, choices=[('Pending', 'Pending'), ('Completed', 'Completed'), ('Failed', 'Failed')])
+    status = models.CharField(max_length=10, choices=[('Pending', 'Pending'), ('Successful', 'Successful'), ('Failed', 'Failed')])
 
     @property
     def currency_sent(self):
