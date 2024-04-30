@@ -1,158 +1,142 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Register</title>
     <style>
-        body {
-            font-family: sans-serif;
-            background-color: #F0F2F4;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .container {
-            background-color: #CCD5DF;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            width: 300px;
-        }
-        h2 {
-            color: #3A506B;
-            text-align: center;
-        }
-        .form-group {
-            position: relative;
-            margin-bottom: 18px;
-            height: auto; /* Allow the height to grow with content */
-            width: 100%;
-        }
-        .input-container {
-            position: relative;
-            height: 100%;
-        }
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 15px;
-            border: 1px solid #AAB7C4;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
-        .errorlist {
-            color: #E55347;
-            font-size: 0.8em;
-            position: absolute;
-            {% comment %} bottom: -30px; {% endcomment %}
-            margin-top: 10px;
-            margin-bottom: 3px;
-            width: calc(100% - 35px);
-        }
-        .button {
-            width: 100%;
-            padding: 10px;
-            border: none;
-            margin-top: 22px;
-            background-color: #5B7DB1;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        .button:hover {
-            background-color: #486A8C;
-        }
-        .login-link {
-            margin-top: 20px;
-            font-size: 0.85em;
-            text-align: right;
-            width: 100%;
-        }
-        .login-link a {
-            color: #4F6272;
-            text-decoration: none;
-        }
-        .login-link a:hover {
-            color: #26364A;
-            text-decoration: underline;
-        }
+      body {
+          font-family: sans-serif;
+          background-color: #F0F2F4;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+          margin: 0;
+      }
+      .container {
+          background-color: #CCD5DF;
+          padding: 20px;
+          border-radius: 10px;
+          box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+          width: 300px;
+      }
+      h2 {
+          color: #3A506B;
+          text-align: center;
+      }
+      .form-group {
+          position: relative;
+          margin-bottom: 18px;
+          height: auto; /* Allow the height to grow with content */
+          width: 100%;
+      }
+      .input-container {
+          position: relative;
+          height: 100%;
+      }
+      .form-group input, .form-group select {
+          width: 100%;
+          padding: 15px;
+          border: 1px solid #AAB7C4;
+          border-radius: 5px;
+          box-sizing: border-box;
+      }
+      .errorlist {
+          color: #E55347;
+          font-size: 0.8em;
+          position: absolute;
+          margin-top: 10px;
+          margin-bottom: 3px;
+          width: calc(100% - 35px);
+      }
+      .button {
+          width: 100%;
+          padding: 10px;
+          border: none;
+          margin-top: 22px;
+          background-color: #5B7DB1;
+          color: white;
+          border-radius: 5px;
+          cursor: pointer;
+          font-size: 16px;
+      }
+      .button:hover {
+          background-color: #486A8C;
+      }
+      .login-link {
+          margin-top: 20px;
+          font-size: 0.85em;
+          text-align: right;
+          width: 100%;
+      }
+      .login-link a {
+          color: #4F6272;
+          text-decoration: none;
+      }
+      .login-link a:hover {
+          color: #26364A;
+          text-decoration: underline;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <h2>Register</h2>
-        <form method="post">
-            {% csrf_token %}
-            <div class="form-group">
-                {{ user_form.username }}
-                {% if user_form.username.errors %}
-                <div class="errorlist" id="username-error">
-                    {% for error in user_form.username.errors %}
-                        {{ error }}  <!-- This displays only the error message without prefix -->
-                    {% endfor %}
-                </div>
-                {% endif %}
-            </div>
-            <div class="form-group">
-                {{ user_form.first_name }}
-            </div>
-            <div class="form-group">
-                {{ user_form.last_name }}
-            </div>
-            <div class="form-group">
-                {{ user_form.email }}
-                {% if user_form.email.errors %}
-                    <div class="errorlist" id="email-error">
-                        {% for error in user_form.email.errors %}
-                            {{ error }} 
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            </div>
-            <div class="form-group">
-                {{ user_form.password1 }}
-            </div>
-            <div class="form-group">
-                {{ user_form.password2 }}
-                {% if user_form.password2.errors %}
-                    <div class="errorlist" id="password-error">
-                        {% for error in user_form.password2.errors %}
-                            {{ error }}
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            </div>
-            <div class="form-group">
-                {{ account_form.preferred_currency }}
-            </div>
-            <button type="submit" class="button">Create Account</button>
-            <div class="login-link">
-                <a href="{% url 'login' %}">Already registered?</a>
-            </div>
-        </form>
+      <h2>Register</h2>
+      <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+          {{ user_form.username }} {% if user_form.username.errors %}
+          <div class="errorlist" id="username-error">
+            {% for error in user_form.username.errors %} {{ error }} {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+        <div class="form-group">{{ user_form.first_name }}</div>
+        <div class="form-group">{{ user_form.last_name }}</div>
+        <div class="form-group">
+          {{ user_form.email }} {% if user_form.email.errors %}
+          <div class="errorlist" id="email-error">
+            {% for error in user_form.email.errors %} {{ error }} {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+        <div class="form-group">{{ user_form.password1 }}</div>
+        <div class="form-group">
+          {{ user_form.password2 }} {% if user_form.password2.errors %}
+          <div class="errorlist" id="password-error">
+            {% for error in user_form.password2.errors %} {{ error }} {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+        <div class="form-group">{{ account_form.preferred_currency }}</div>
+        <button type="submit" class="button">Create Account</button>
+        <div class="login-link">
+          <a href="{% url 'login' %}">Already registered?</a>
+        </div>
+      </form>
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Select all form groups
-            const formGroups = document.querySelectorAll('.form-group');
-        
-            formGroups.forEach(group => {
-                // Find any errorlist within this form group
-                const errorList = group.querySelector('.errorlist');
-                if (errorList) {
-                    // Calculate the margin based on the length of the error message
-                    const errorLength = errorList.textContent.trim().length;
-                    const newMarginBottom = Math.max(20, 25 + Math.floor(errorList.textContent.length / 8));
-                    group.style.marginBottom = newMarginBottom + 'px';
-                } else {
-                    group.style.marginBottom = '18px'; 
-                }
-            });
-        });
-        </script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Select all form groups
+        const formGroups = document.querySelectorAll(".form-group");
 
-</body>
+        formGroups.forEach((group) => {
+          // Find any errorlist within this form group
+          const errorList = group.querySelector(".errorlist");
+          if (errorList) {
+            // Calculate the margin based on the length of the error message
+            const errorLength = errorList.textContent.trim().length;
+            const newMarginBottom = Math.max(
+              20,
+              25 + Math.floor(errorList.textContent.length / 8)
+            );
+            group.style.marginBottom = newMarginBottom + "px";
+          } else {
+            group.style.marginBottom = "18px";
+          }
+        });
+      });
+    </script>
+  </body>
 </html>

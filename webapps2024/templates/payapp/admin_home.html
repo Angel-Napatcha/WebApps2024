@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin Dashboard</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        background-color: #f0f2f4;
+        margin: 0;
+        padding: 0;
+      }
+      .top-bar {
+        background-color: #3a506b;
+        color: white;
+        padding: 10px 20px;
+        width: 100%;
+        box-sizing: border-box;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.95em;
+      }
+      .greeting {
+        color: #f4f7fa;
+        font-size: 1.5em;
+        font-weight: 300;
+        margin: 20px 0;
+        width: 100%;
+        padding: 0 20px;
+        box-sizing: border-box;
+        text-align: left;
+      }
+      .top-bar .link-container {
+        margin-left: auto;
+        padding: 0 20px;
+      }
+      .top-bar .link-container a {
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+        display: inline-block;
+        width: 70px;
+      }
+      .top-bar .link-container a:hover {
+        text-decoration: underline;
+      }
+      .content-wrapper {
+        display: grid;
+        grid-template-columns: 1.35fr 2fr;
+        grid-template-rows: auto auto;
+        grid-gap: 20px;
+        width: 100%;
+        padding: 20px;
+        box-sizing: border-box;
+        margin-top: 10px;
+      }
+      .left-column {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .title {
+        color: #333;
+        font-size: 1.2em;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        text-align: left;
+        border-bottom: 1px solid #ADBED1;
+        padding-bottom: 10px;
+      }
+      
+      .register-box {
+        background: #ccd5df;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        box-sizing: border-box;
+        overflow-y: auto;
+        height: calc(20vh - 10px);
+      }
+      .button {
+        background-color: #5b7db1;
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 15px;
+        margin: 4px 2px;
+        margin-top: 15px;
+        cursor: pointer;
+        border-radius: 5px;
+      }
+      .button:hover {
+        background-color: #486a8c;
+      }
+
+      .user-accounts-box {
+        background: #ccd5df;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        box-sizing: border-box;
+        height: calc(62.5vh - 10px);
+      }
+      .account-list {
+        list-style: none;
+        padding: 0;
+        margin-top: 0;
+      }
+      .account-list li {
+        padding: 10px;
+        margin-bottom: 15px;
+        border-bottom: 1px solid #f0f0ee;
+        padding-bottom: 20px;
+      }
+      .account-item {
+        padding: 10px;
+        border-bottom: 1px solid #ccc; 
+        margin-bottom: 10px; 
+      }
+      .account-username {
+        display: block; 
+        font-weight: bold;
+        color: #000;
+        margin-bottom: 6px; 
+      }
+      .account-details {
+        color: #333; 
+        font-size: 15px; 
+      }
+      .account-balance,
+      .account-email {
+        margin-bottom: 10px;
+        color: #615F5D;
+        margin-right: 5px;
+        font-weight: bold;
+      } 
+      .no-accounts {
+        color: #666;
+        padding: 10px;
+      }
+
+      .transaction-history-box {
+        background: #ccd5df;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        box-sizing: border-box;
+        max-height: 82.5vh;
+        overflow-y: auto;
+      }
+      .transaction-list {
+        list-style: none;
+        padding: 0;
+        margin-top: 15px;
+      }
+      .transaction-list li {
+        background-color: #f0f2f4;
+        padding: 10px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        transition: box-shadow 0.3s;
+      }
+      .transaction-list li:hover {
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+      }
+      .transaction-detail {
+        margin-top: 8px;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        font-size: 15px;
+      }
+      .transaction-detail i {
+        margin-right: 8px;
+        color: #3a506b;
+      }
+      .transaction-label {
+        font-weight: bold;
+        color: #3a506b;
+        margin-right: 5px;
+      }
+      .semi-bold {
+        font-weight: 600;
+      }
+      .status .semi-bold[data-status="Successful"] {
+        color: green;
+      }
+      .status .semi-bold[data-status="Pending"] {
+        color: orange;
+      }
+      .status .semi-bold[data-status="Failed"] {
+        color: red;
+      }
+      no-transactions {
+        text-align: center;
+        padding: 20px 0;
+      }
+    </style>
+  </head>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+  />
+  <body>
+    <div class="top-bar">
+      <div class="greeting">Welcome, Admin {{ user.username }}!</div>
+      <div class="link-container">
+        <a href="{% url 'logout' %}">LOG OUT</a>
+      </div>
+    </div>
+
+    <div class="content-wrapper">
+      <div class="left-column">
+        <!-- Register New Administrator Section -->
+        <div class="register-box">
+          <h2 class="title">Register New Administrator</h2>
+          <a href="{% url 'register_admin' %}" class="button"
+            >Click here to register</a
+          >
+        </div>
+
+        <!-- User Accounts Section -->
+        <div class="user-accounts-box">
+          <h2 class="title">User Accounts</h2>
+          <ul class="account-list">
+            {% for account in user_accounts %}
+            <li class="account-item">
+              <span class="account-username semi-bold">{{ account.user.username }}</span>
+              <div class="account-details">
+                <span class="account-balance">Balance:</span>{{ account.currency_symbol }}{{ account.balance }}
+                <br><span class="account-email">Email:</span>{{ account.user.email }}
+              </div>
+            </li>
+            {% empty %}
+            <li class="no-accounts">No user accounts found.</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+
+      <div class="transaction-history-box">
+        <h2 class="title">Payment Transactions</h2>
+        <ul class="transaction-list">
+          {% for transaction in transactions %}
+          <li>
+            <div class="transaction-detail">
+              <i class="fas fa-user-circle"></i>
+              <span class="transaction-label">Sender:</span>
+                <span class="semi-bold">{{ transaction.sender.username }}</span>
+                &nbsp;<span class="currency-amount">{{ transaction.sender_currency_symbol }}{{ transaction.amount_sent }}</span>
+            </div>
+            <div class="transaction-detail">
+              <i class="fas fa-user-circle"></i>
+              <span class="transaction-label">Recipient:</span>
+                <span class="semi-bold">{{ transaction.recipient.username }}</span>
+                &nbsp;<span class="currency-amount">{{ transaction.recipient_currency_symbol }}{{ transaction.amount_received }}</span>
+            </div>
+            <div class="transaction-detail">
+                <i class="fas fa-calendar-alt"></i>
+                <span class="transaction-label">Date:</span>
+                  <span>{{ transaction.timestamp }}</span>
+              </div>
+            <div class="transaction-detail status">
+              <i class="fas fa-info-circle"></i>
+              <span class="transaction-label">Status:</span>
+                <span class="semi-bold" data-status="{{ transaction.status }}">{{ transaction.status }}</span>
+            </div>
+            
+          </li>
+          {% empty %}
+          <div class="no-transactions">No transactions found.</div>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Select all form groups
+        const formGroups = document.querySelectorAll(".form-group");
+
+        formGroups.forEach((group) => {
+          // Find any errorlist within this form group
+          const errorList = group.querySelector(".errorlist");
+          if (errorList) {
+            // Calculate the margin based on the length of the error message
+            const errorLength = errorList.textContent.trim().length;
+            const newMarginBottom = Math.max(
+              20,
+              25 + Math.floor(errorList.textContent.length / 8)
+            );
+            group.style.marginBottom = newMarginBottom + "px";
+          } else {
+            group.style.marginBottom = "18px";
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

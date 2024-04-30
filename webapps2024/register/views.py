@@ -4,6 +4,7 @@ from register.models import UserAccount
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
+from django.http import HttpResponse
 from django.contrib.auth import authenticate, login
 from django.urls import reverse
 from django.core.mail import send_mail
@@ -52,7 +53,7 @@ class UserAccountForm(forms.ModelForm):
     class Meta:
         model = UserAccount
         fields = ('preferred_currency',)
-
+        
 
 def register_view(request):
     if request.method == 'POST':
@@ -103,12 +104,18 @@ def activate(request, uidb64, token):
     else:
         return render(request, 'register/activation_invalid.html')
 
+def is_admin(user):
+    return user.is_active and user.is_staff and user.is_superuser
+
 def login_view(request):
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
         user = authenticate(request, username=username, password=password)
         if user is not None:
+            if is_admin(user):
+                login(request, user)
+                return redirect('/webapps2024/payapp/admin/home/')
             if UserAccount.objects.get(user=user).is_activated:
                 login(request, user)
                 return redirect('/webapps2024/payapp/home')
@@ -118,3 +125,22 @@ def login_view(request):
             return render(request, 'register/login.html', {'error': 'Invalid username or password.'})
     else:
         return render(request, 'register/login.html')
+
+def register_admin_view(request):
+    if not is_admin(request.user):
+        return HttpResponse('You do not have the necessary permissions to view this page.', status=403)
+    if request.method == 'POST':
+        admin_form = UserRegistrationForm(request.POST)
+        if admin_form.is_valid():
+            new_admin = admin_form.save(commit=False)
+            new_admin.is_active = True
+            new_admin.is_staff = True
+            new_admin.is_superuser = True
+            new_admin.save()
+            return redirect('register_admin_success')
+    else:
+        admin_form = UserRegistrationForm()
+    return render(request, 'register/register_admin.html', {'admin_form': admin_form})
+
+def register_admin_success(request):
+    return render(request, 'register/register_admin_success.html')

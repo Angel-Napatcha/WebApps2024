@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import logout
 from currency_converter_api.views import convert_currency
+from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django import forms
 from django.http import HttpResponse
@@ -9,8 +10,8 @@ from payapp.models import Transaction, PaymentRequest, Notification
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.core.exceptions import ValidationError
-from django.shortcuts import get_object_or_404
 from django.db import transaction
+from register.views import is_admin
 
 
 class TransactionForm(forms.Form):
@@ -122,7 +123,7 @@ def home_view(request):
         'recipient': req.recipient.username,
         'amount': f"{currency_symbols.get(req.requester.useraccount.preferred_currency, '')}{req.amount_requested:.2f}",
         'message': req.message,
-        'date': req.timestamp.strftime('%Y-%m-%d %H:%M'),
+        'date': req.timestamp.strftime('%B %d, %Y, %-I:%M %p').replace('PM', 'p.m.').replace('AM', 'a.m.'),
         'status': req.status
     } for req in sent_requests]
 
@@ -131,7 +132,7 @@ def home_view(request):
         'requester': req.requester.username,
         'amount': f"{currency_symbols.get(req.recipient.useraccount.preferred_currency, '')}{req.amount_in_recipient_currency:.2f}",
         'message': req.message,
-        'date': req.timestamp.strftime('%Y-%m-%d %H:%M'),
+        'date': req.timestamp.strftime('%B %d, %Y, %I:%M %p'),
         'status': req.status
     } for req in received_requests]
     
@@ -390,6 +391,37 @@ def notifications_view(request):
 
     # Return the serialized data as JSON
     return JsonResponse({'notifications': notifications_data})
+
+def admin_home_view(request):
+    if not is_admin(request.user):
+        return HttpResponse('You do not have the necessary permissions to view this page.', status=403)
+
+    # Define the mapping for currency symbols
+    currency_symbols = {
+        'USD': '$', 
+        'EUR': '€', 
+        'GBP': '£',
+    }
+
+    # Fetch and enrich user accounts
+    user_accounts = UserAccount.objects.all()
+    for account in user_accounts:
+        account.currency_symbol = currency_symbols.get(account.preferred_currency, '')
+        account.user_email = account.user.email
+
+    # Fetch and enrich transactions
+    transactions = Transaction.objects.all().order_by('-timestamp')
+
+    for transaction in transactions:
+        transaction.sender_currency_symbol = currency_symbols.get(transaction.sender.useraccount.preferred_currency, '')
+        transaction.recipient_currency_symbol = currency_symbols.get(transaction.recipient.useraccount.preferred_currency, '')
+
+    context = {
+        'user': request.user,
+        'user_accounts': user_accounts,
+        'transactions': transactions,
+    }
+    return render(request, 'payapp/admin_home.html', context)
 
 def logout_view(request):
     logout(request)

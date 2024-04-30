@@ -24,6 +24,16 @@
         align-items: center;
         font-size: 0.95em;
       }
+      .greeting {
+        color: #f4f7fa;
+        font-size: 1.5em;
+        font-weight: 300;
+        margin: 20px 0;
+        width: 100%;
+        padding: 0 20px;
+        box-sizing: border-box;
+        text-align: left;
+      }
       .top-bar .link-container {
         margin-left: auto; 
         padding: 0 20px; 
@@ -37,16 +47,6 @@
       }
       .top-bar .link-container a:hover {
         text-decoration: underline; 
-      }
-      .greeting {
-        color: #f4f7fa;
-        font-size: 1.5em;
-        font-weight: 300;
-        margin: 20px 0;
-        width: 100%;
-        padding: 0 20px;
-        box-sizing: border-box;
-        text-align: left;
       }
       .notification-popup {
         position: fixed;
@@ -104,6 +104,7 @@
         display: inline-block;
         border: 1px solid white;
       }
+
       .content-wrapper {
         display: grid;
         grid-template-columns: 1.35fr 2fr;
@@ -119,6 +120,16 @@
         flex-direction: column;
         gap: 20px;
       }
+      .title {
+        color: #333;
+        font-size: 1.2em;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        text-align: left;
+        border-bottom: 1px solid #ADBED1;
+        padding-bottom: 10px;
+      }
+
       .balance-box {
         background: #ccd5df;
         border-radius: 8px;
@@ -127,30 +138,6 @@
         box-sizing: border-box;
         overflow-y: auto;
         height: calc(27.5vh - 10px);
-      }
-      .payment-requests-box {
-        background: #ccd5df;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        padding: 20px;
-        box-sizing: border-box;
-        height: calc(55vh - 10px);
-      }
-      .transaction-history-box {
-        background: #ccd5df;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        padding: 20px;
-        box-sizing: border-box;
-        max-height: 82.5vh;
-        overflow-y: auto;
-      }
-      .title {
-        color: #333;
-        font-size: 1.2em;
-        margin-top: 10px;
-        margin-bottom: 10px;
-        text-align: left;
       }
       .balance-container {
         display: flex;
@@ -204,28 +191,14 @@
         margin-right: 10px;
         display: inline-block;
       }
-      .request-actions button {
-          font-size: 0.85em; 
-          padding: 6px 12px;
-          border: none; 
-          border-radius: 5px; 
-          cursor: pointer;
-          transition: background-color 0.3s ease;
-          margin: 0 5px; 
-      }
-      .approve-button {
-          background-color: #4CAF50; 
-          color: white;
-      }
-      .reject-button {
-          background-color: #f44336; 
-          color: white;
-      }
-      .request-actions button:hover {
-          opacity: 0.85; 
-      }
-      .request-actions form {
-          display: inline; 
+
+      .payment-requests-box {
+        background: #ccd5df;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        box-sizing: border-box;
+        height: calc(55vh - 10px);
       }
       .tab {
         display: flex;
@@ -274,7 +247,7 @@
       }
       .tab-content ul {
         list-style: none;
-        padding: 0;
+        padding: 5px;
         margin: 0;
       }
       .tab-content li {
@@ -283,8 +256,12 @@
         justify-content: space-between;
         align-items: center;
         border-bottom: 1px solid #ececec;
-        background-color: #ECECEC;
+        background-color: #F1F6FB;
         border-radius: 8px;
+        transition: box-shadow 0.3s;
+      }
+      .tab-content li:hover {
+        box-shadow: 0 2px 5px rgba(0,0,0,0.3);
       }
       .no-requests {
         text-align: center;
@@ -299,7 +276,7 @@
         justify-content: space-between;
         align-items: center;
         margin-top: 10px;
-        font-size: 0.88em;
+        font-size: 15px;
         padding-bottom: 12px;
       }
       .request-item:not(:last-child) {
@@ -309,8 +286,8 @@
         line-height: 1.5;
       }
       .request-details b {
-        font-weight: 550; 
-        color: #615F5D;
+        font-weight: bold; 
+        color: #3a506b;
       } 
       .request-details span.request-status {
         font-weight: bold;
@@ -323,6 +300,39 @@
       }
       .request-details span.request-status.approved {
         color: #2ac91d;
+      }
+      .request-actions button {
+        font-size: 0.85em; 
+        padding: 6px 12px;
+        border: none; 
+        border-radius: 5px; 
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        margin: 0 5px; 
+      }
+      .approve-button {
+          background-color: #4CAF50; 
+          color: white;
+      }
+      .reject-button {
+          background-color: #f44336; 
+          color: white;
+      }
+      .request-actions button:hover {
+          opacity: 0.85; 
+      }
+      .request-actions form {
+          display: inline; 
+      }
+    
+      .transaction-history-box {
+        background: #ccd5df;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        box-sizing: border-box;
+        max-height: 82.5vh;
+        overflow-y: auto;
       }
       .transactions-list {
         list-style: none;
@@ -400,11 +410,11 @@
           {% endif %}
         </div>
       </div>
-      
       <div class="link-container">
         <a href="{% url 'logout' %}">LOG OUT</a>
       </div>
     </div>
+    
     <div class="content-wrapper">
       <div class="left-column">
         <div class="balance-box">
@@ -489,9 +499,9 @@
               <p class="no-requests">No received requests.</p>
             {% endif %}
           </div>
-
         </div>
       </div>
+      
       <div class="transaction-history-box">
         <h2 class="title">Transaction History</h2>
         <div class="transactions-list">
