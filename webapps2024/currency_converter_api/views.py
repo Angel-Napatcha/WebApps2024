@@ -12,17 +12,20 @@ EXCHANGE_RATES = {
     'EUR': {'GBP': 0.86, 'USD': 1.07},
 }
 
+# Serializer for currency conversion
 class CurrencyConversionSerializer(serializers.Serializer):
     from_currency = serializers.CharField(max_length=3)
     to_currency = serializers.CharField(max_length=3)
     amount = serializers.FloatField()
 
+    # Validate the currencies
     def validate(self, attrs):
         valid_currencies = ['GBP', 'USD', 'EUR']
         if attrs['from_currency'] not in valid_currencies or attrs['to_currency'] not in valid_currencies:
             raise serializers.ValidationError("Unsupported currency.")
         return attrs
 
+    # Perform currency conversion
     def create(self, validated_data):
         from_currency = validated_data['from_currency']
         to_currency = validated_data['to_currency']
@@ -30,13 +33,14 @@ class CurrencyConversionSerializer(serializers.Serializer):
         rate = EXCHANGE_RATES[from_currency][to_currency]
         converted_amount = amount * rate
         return {
-            'original_amount': amount,
             'original_currency': from_currency,
+            'original_amount': amount,
             'converted_currency': to_currency,
             'converted_amount': converted_amount,
             'rate': rate
         }
 
+# API view for currency conversion
 class CurrencyConversionAPI(APIView):
     def get(self, request, from_currency, to_currency, amount):
         serializer = CurrencyConversionSerializer(data={
@@ -49,9 +53,10 @@ class CurrencyConversionAPI(APIView):
             return Response(result)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+# Function to convert currency using the API
 def convert_currency(from_currency, to_currency, amount):
     client = Client()
-    response = client.get(f'/conversion/{from_currency}/{to_currency}/{amount}/')
+    response = client.get(f'/webapps2024/conversion/{from_currency}/{to_currency}/{amount}/')
     if response.status_code == 200:
         data = response.json()
         converted_amount = Decimal(data['converted_amount'])

@@ -36,21 +36,37 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'register',
-    'rest_framework',
+    'django_extensions',
     'currency_converter_api',
+    'rest_framework',
+    'register',
     'payapp'
 ]
+
+# Security settings
+SECURE_SSL_REDIRECT = True # Redirect all non-HTTPS requests to HTTPS
+CSRF_COOKIE_SECURE = True # Only send CSRF cookies over HTTPS
+SESSION_COOKIE_SECURE = True # Only send session cookies over HTTPS
+SECURE_REDIRECT_EXEMPT = ['/conversion/']
+
+# HSTS Settings
+SECURE_HSTS_SECONDS = 31536000  # Set to at least one year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware', # Protects against CSRF attacks
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware', # Protects against Clickjacking
+    'csp.middleware.CSPMiddleware', # Protects against XSS attacks
 ]
+
+CSP_REPORT_ONLY = True
+CSP_STYLE_SRC = ("'self'",)
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
